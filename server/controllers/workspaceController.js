@@ -1,5 +1,7 @@
 import { prisma } from "../db.js";
 
+
+// Get all workspaces for a user
 export const getUserWorkspaces = async (req, res) => {
     try {
         const { userId } = req.auth;
