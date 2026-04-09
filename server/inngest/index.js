@@ -69,5 +69,109 @@ const syncUserUpdate = inngest.createFunction(
     }
 );
 
+// Inngest function to create workspace
+const createWorkspace = inngest.createFunction(
+    {
+        id: "create-workspace",
+        event: "clerk/organization.created",
+    },
+    async ({ event, step }) => {
+        const workspace = event.data;
+
+        await step.run("create-workspace-in-db", async () => {
+            await prisma.workspace.create({
+                data: {
+                    id: workspace.id,
+                    name: workspace.name,
+                    slug: workspace.slug,
+                    ownerId: workspace.created_by,
+                    image_url: workspace.image_url,
+                },
+            });
+
+            // Add ceator as ADMIN
+            await prisma.workspaceMember.create({
+                data: {
+                    userId: workspace.created_by,
+                    workspaceId: workspace.id,
+                    role: "ADMIN",
+                },
+            });
+        });
+    }
+);
+
+// Inngest function to update workspace
+const updateWorkspace = inngest.createFunction(
+    {
+        id: "update-workspace",
+        event: "clerk/organization.updated",
+    },
+    async ({ event, step }) => {
+        const workspace = event.data;
+
+        await step.run("update-workspace-in-db", async () => {
+            await prisma.workspace.update({
+                where: {
+                    id: workspace.id,
+                },
+                data: {
+                    name: workspace.name,
+                    slug: workspace.slug,
+                    image_url: workspace.image_url,
+                },
+            });
+        });
+    }
+);
+
+// Inngest function to delete workspace
+const deleteWorkspace = inngest.createFunction(
+    {
+        id: "delete-workspace",
+        event: "clerk/organization.deleted",
+    },
+    async ({ event, step }) => {
+        const workspace = event.data;
+
+        await step.run("delete-workspace-in-db", async () => {
+            await prisma.workspace.delete({
+                where: {
+                    id: workspace.id,
+                },
+            });
+        });
+    }
+);
+
+// Inngest function to update workspace member
+const createWorkspaceMember = inngest.createFunction(
+    {
+        id: "create-workspace-member",
+        event: "clerk/organizationInvitation.created",
+    },
+    async ({ event, step }) => {
+        const workspaceMember = event.data;
+
+        await step.run("create-workspace-member-in-db", async () => {
+            await prisma.workspaceMember.create({
+                data: {
+                    userId: workspaceMember.user_id,
+                    workspaceId: workspaceMember.organization_id,
+                    role: String(workspaceMember.role_name).toUpperCase(),
+                },
+            });
+        });
+    }
+);
+
 // Create an array where we'll export Inngest functions
-export const functions = [syncUserCreation, syncUserUpdate, syncUserDelete];
+export const functions = [
+    syncUserCreation,
+    syncUserUpdate,
+    syncUserDelete,
+    createWorkspace,
+    updateWorkspace,
+    deleteWorkspace,
+    createWorkspaceMember
+];
