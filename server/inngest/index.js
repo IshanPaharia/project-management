@@ -8,8 +8,6 @@ export const inngest = new Inngest({ id: "project-management-0210" });
 const syncUserCreation = inngest.createFunction(
     {
         id: "sync-user-with-clerk",
-    },
-    {
         event: "clerk/user.created",
     },
     async ({ event, step }) => {
@@ -32,8 +30,6 @@ const syncUserCreation = inngest.createFunction(
 const syncUserDelete = inngest.createFunction(
     {
         id: "delete-user-with-clerk",
-    },
-    {
         event: "clerk/user.deleted",
     },
     async ({ event, step }) => {
@@ -53,8 +49,6 @@ const syncUserDelete = inngest.createFunction(
 const syncUserUpdate = inngest.createFunction(
     {
         id: "update-user-with-clerk",
-    },
-    {
         event: "clerk/user.updated",
     },
     async ({ event, step }) => {
