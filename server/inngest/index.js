@@ -8,9 +8,9 @@ export const inngest = new Inngest({ id: "project-management-0210" });
 const syncUserCreation = inngest.createFunction(
     {
         id: "sync-user-with-clerk",
-        event: "clerk/user.created",
+        triggers: { event: "clerk/user.created" },
     },
-    async ({ event, step }) => {
+    async ({ event, step, runId }) => {
         const user = event.data;
 
         await step.run("sync-user-to-db", async () => {
@@ -30,9 +30,9 @@ const syncUserCreation = inngest.createFunction(
 const syncUserDelete = inngest.createFunction(
     {
         id: "delete-user-with-clerk",
-        event: "clerk/user.deleted",
+        triggers: { event: "clerk/user.deleted" },
     },
-    async ({ event, step }) => {
+    async ({ event, step, runId }) => {
         const user = event.data;
 
         await step.run("delete-user-from-db", async () => {
@@ -49,9 +49,9 @@ const syncUserDelete = inngest.createFunction(
 const syncUserUpdate = inngest.createFunction(
     {
         id: "update-user-with-clerk",
-        event: "clerk/user.updated",
+        triggers: { event: "clerk/user.updated" },
     },
-    async ({ event, step }) => {
+    async ({ event, step, runId }) => {
         const user = event.data;
 
         await step.run("update-user-to-db", async () => {
@@ -73,9 +73,9 @@ const syncUserUpdate = inngest.createFunction(
 const createWorkspace = inngest.createFunction(
     {
         id: "create-workspace",
-        event: "clerk/organization.created",
+        triggers: { event: "clerk/organization.created" },
     },
-    async ({ event, step }) => {
+    async ({ event, step, runId }) => {
         const workspace = event.data;
 
         await step.run("create-workspace-in-db", async () => {
@@ -105,9 +105,9 @@ const createWorkspace = inngest.createFunction(
 const updateWorkspace = inngest.createFunction(
     {
         id: "update-workspace",
-        event: "clerk/organization.updated",
+        triggers: { event: "clerk/organization.updated" },
     },
-    async ({ event, step }) => {
+    async ({ event, step, runId }) => {
         const workspace = event.data;
 
         await step.run("update-workspace-in-db", async () => {
@@ -129,9 +129,9 @@ const updateWorkspace = inngest.createFunction(
 const deleteWorkspace = inngest.createFunction(
     {
         id: "delete-workspace",
-        event: "clerk/organization.deleted",
+        triggers: { event: "clerk/organization.deleted" },
     },
-    async ({ event, step }) => {
+    async ({ event, step, runId }) => {
         const workspace = event.data;
 
         await step.run("delete-workspace-in-db", async () => {
@@ -148,9 +148,9 @@ const deleteWorkspace = inngest.createFunction(
 const createWorkspaceMember = inngest.createFunction(
     {
         id: "create-workspace-member",
-        event: "clerk/organizationInvitation.created",
+        triggers: { event: "clerk/organizationInvitation.created" },
     },
-    async ({ event, step }) => {
+    async ({ event, step, runId }) => {
         const workspaceMember = event.data;
 
         await step.run("create-workspace-member-in-db", async () => {
