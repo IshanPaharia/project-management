@@ -1,5 +1,6 @@
 import { Inngest } from "inngest";
 import { prisma } from "../db.js";
+import sendEmail from "../nodeMailer.js";
 
 // Create a client to send and receive events
 export const inngest = new Inngest({ id: "project-management-0210" });
@@ -165,6 +166,69 @@ const createWorkspaceMember = inngest.createFunction(
     }
 );
 
+// Inngest fucntion to send email on task creation
+const sendTaskAssignmentEmail = inngest.createFunction(
+    {
+        id: "send-task-assignment-email",
+        triggers: { event: "app/task.assigned" },
+    },
+    async ({ event, step}) => {
+        const {taskId, origin} = event.data;
+
+        const task = await prisma.task.findUnique({
+            where: {id:taskId},
+            include: {
+                assignee: true,
+                project: true,
+            }
+        })
+
+        await sendEmail({
+            to: task.assignee.email,
+            subject: `New task assignment in ${task.project.name}`,
+            body: `
+            <h1>New Task Assigned</h1>
+            <p>You have been assigned a new task in ${task.project.name}</p>
+            <p>Task: ${task.title}</p>
+            <p>Description: ${task.description}</p>
+            <p>Priority: ${task.priority}</p>
+            <p>Due Date: ${task.due_date}</p>
+            <a href="${origin}/task/${task.id}">View Task</a>
+            `,
+        })
+
+        if(new Date(task.due_date).toLocaleDateString() !== new Date().toDateString()) {
+            await step.sleepUntil('wait-for-the-due-date', new Date(task.due_date))
+
+            await step.run('send-reminder-email', async () => {
+                const updatedTask = await prisma.task.findUnique({
+                    where: {id: taskId},
+                    include: {
+                        assignee: true,
+                        project: true,
+                    }
+                })
+
+                if(!updatedTask) {
+                    return;
+                }
+
+                if(updatedTask.status !== "DONE") {
+                    await sendEmail({
+                        to: updatedTask.assignee.email,
+                        subject: `Task reminder: ${updatedTask.title}`,
+                        body: `
+                        <h1>Task Reminder</h1>
+                        <p>This is a reminder that your task "${updatedTask.title}" is due on ${updatedTask.due_date}</p>
+                        <a href="${origin}/task/${updatedTask.id}">View Task</a>
+                        `,
+                    })
+                }
+            })
+        }
+    }
+);
+
 // Create an array where we'll export Inngest functions
 export const functions = [
     syncUserCreation,
@@ -173,5 +237,6 @@ export const functions = [
     createWorkspace,
     updateWorkspace,
     deleteWorkspace,
-    createWorkspaceMember
+    createWorkspaceMember,
+    sendTaskAssignmentEmail
 ];
