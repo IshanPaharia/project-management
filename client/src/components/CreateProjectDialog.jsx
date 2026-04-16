@@ -38,9 +38,10 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen }) => {
             const {data} = await api.post("api/projects", {workspaceId: currentWorkspace.id, ...formData}, 
                 {headers: {Authorization: `Bearer ${await getToken()}`}})
             dispatch(addProject(data.project));
+            toast.success("Project created successfully");
             setIsDialogOpen(false);
         } catch (error) {
-            toast.error("Failed to create project");
+            toast.error(error.response?.data?.message || "Failed to create project");
         } finally {
             setIsSubmitting(false);
         }

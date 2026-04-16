@@ -28,8 +28,6 @@ function WorkspaceDropdown() {
 
     // Close dropdown on outside click
     useEffect(() => {
-        console.log(currentWorkspace);
-        console.log(workspaces);
         function handleClickOutside(event) {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
                 setIsOpen(false);

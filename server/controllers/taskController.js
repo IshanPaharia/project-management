@@ -45,7 +45,7 @@ export const createTask = async(req, res) => {
         })
 
         await inngest.send({
-            name: "app/task-assigned",
+            name: "app/task.assigned",
             data: {
                 taskId: task.id,
                 origin,
@@ -87,8 +87,8 @@ export const updateTask = async(req, res) => {
 
         // create task
         const updatedTask = await prisma.task.update({
-            where: {id: req.param.id},
-            data: req.body()
+            where: {id: req.params.id},
+            data: req.body
         })
 
         res.json({task: updatedTask, message: "Task updated successfully"})
@@ -114,7 +114,7 @@ export const deleteTask = async(req, res) => {
 
         // check if user is admin
         const project = await prisma.project.findUnique({
-            where: {id: taskIds[0].projectId},
+            where: {id: tasks[0].projectId},
             include: {members: {include: {user:true}}}
         })
 
@@ -123,7 +123,6 @@ export const deleteTask = async(req, res) => {
         }else if(project.team_lead !== userId) {
             return res.status(403).json({message: "No permissions"})
         }
-
 
         await prisma.task.deleteMany({
             where: {id: {in: taskIds}}
