@@ -145,11 +145,11 @@ const deleteWorkspace = inngest.createFunction(
     }
 );
 
-// Inngest function to update workspace member
+// Inngest function to add workspace member
 const createWorkspaceMember = inngest.createFunction(
     {
         id: "create-workspace-member",
-        triggers: { event: "clerk/organizationInvitation.created" },
+        triggers: { event: "clerk/organizationInvitation.accepted" },
     },
     async ({ event, step, runId }) => {
         const workspaceMember = event.data;

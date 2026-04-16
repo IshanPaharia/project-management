@@ -4,7 +4,7 @@ import { createTask, deleteTask, updateTask } from "../controllers/taskControlle
 const taskRouter = express.Router();
 
 taskRouter.post('/', createTask);
-taskRouter.put('/', updateTask);
-taskRouter.delete('/', deleteTask);
+taskRouter.put('/:id', updateTask);
+taskRouter.delete('/delete', deleteTask);
 
 export default taskRouter

@@ -8,7 +8,7 @@ export const getUserWorkspaces = async (req, res) => {
             where: {
                 members: {
                     some: {
-                        userId,
+                        userId: userId,
                     },
                 },
             },
@@ -27,18 +27,23 @@ export const getUserWorkspaces = async (req, res) => {
                                     include: {
                                         user: true
                                     }
-                                }
+                                },
                             }
                         },
-                        owner: true
+                        members: {
+                            include: {
+                                user: true
+                            }
+                        }
                     }
-                }
+                },
+                owner: true
             }
         });
         res.json({workspaces});
     } catch (error) {
         console.error("Error fetching workspaces:", error);
-        res.status(500).json({ error: "Failed to fetch workspaces" });
+        res.status(500).json({ message: error.message || error.code });
     }
 };
 

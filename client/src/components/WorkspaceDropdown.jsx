@@ -28,6 +28,8 @@ function WorkspaceDropdown() {
 
     // Close dropdown on outside click
     useEffect(() => {
+        console.log(currentWorkspace);
+        console.log(workspaces);
         function handleClickOutside(event) {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
                 setIsOpen(false);
@@ -37,11 +39,11 @@ function WorkspaceDropdown() {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    useEffect(()=>{
+    useEffect(() => {
         if(isLoaded && currentWorkspace){
             setActive({organization: currentWorkspace.id})
         }
-    }),[currentWorkspace, isLoaded]
+    }, [currentWorkspace, isLoaded]);
 
     return (
         <div className="relative m-4" ref={dropdownRef}>
