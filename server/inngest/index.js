@@ -193,7 +193,7 @@ const sendTaskAssignmentEmail = inngest.createFunction(
             <p>Description: ${task.description}</p>
             <p>Priority: ${task.priority}</p>
             <p>Due Date: ${task.due_date}</p>
-            <a href="${origin}/task/${task.id}">View Task</a>
+            <a href="${origin}">View Task</a>
             `,
         })
 
@@ -220,7 +220,7 @@ const sendTaskAssignmentEmail = inngest.createFunction(
                         body: `
                         <h1>Task Reminder</h1>
                         <p>This is a reminder that your task "${updatedTask.title}" is due on ${updatedTask.due_date}</p>
-                        <a href="${origin}/task/${updatedTask.id}">View Task</a>
+                        <a href="${origin}">View Task</a>
                         `,
                     })
                 }
